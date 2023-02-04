@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 import { routes } from "./routes"
+import { getToken, setToken, getRefreshToken } from "@/utils/auth.js"
 
 const router = createRouter({
   // 4. 内部提供了 history 模式的实现。为了简单起见，我们在这里使用 hash 模式。
@@ -7,4 +8,15 @@ const router = createRouter({
   routes // `routes: routes` 的缩写
 })
 
-export { router }
+// router.beforeEach((to, from, next) => {
+//   console.log(to.name)
+//   if (to.name !== "Login") {
+//     let token = getToken()
+//     if (!token) {
+//       next("/login")
+//     }
+//   }
+//   next()
+// })
+
+export { router, routes }

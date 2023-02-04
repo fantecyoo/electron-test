@@ -1,11 +1,11 @@
-<script setup lang="ts">
-import { shell, ipcRenderer } from "electron"
-import path from "path"
-console.log("----", shell, path)
+<script setup>
+// import { shell, ipcRenderer } from "electron"
+// import path from "path"
+// console.log("----", shell, path)
 // shell.openPath(
 //   path.resolve("/Users/fanlyu/Desktop/zhang/ims-file-manager/src/file.eml")
 // )
-ipcRenderer.invoke("ping")
+// ipcRenderer.invoke("ping")
 </script>
 
 <template>

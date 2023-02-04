@@ -1,7 +1,7 @@
 // src\main\mainEntry.ts
 import { app, BrowserWindow, ipcMain } from "electron"
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true"
-let mainWindow: BrowserWindow
+let mainWindow
 
 app.whenReady().then(() => {
   let config = {
@@ -13,7 +13,8 @@ app.whenReady().then(() => {
       webviewTag: true,
       spellcheck: false,
       disableHtmlFullscreenWindowResize: true
-    }
+    },
+    titleBarStyle: "hidden"
   }
   ipcMain.handle("ping", () => {
     console.log("pong")
@@ -21,6 +22,6 @@ app.whenReady().then(() => {
   })
   mainWindow = new BrowserWindow(config)
   // mainWindow.webContents.openDevTools({ mode: "undocked" })
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
   mainWindow.loadURL(process.argv[2])
 })

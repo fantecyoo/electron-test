@@ -12,8 +12,18 @@
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["element-plus/global"]
+    "types": ["element-plus/global"],
+    "allowJs": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/main/mainEntry.js",
+    "src/router/routes.js",
+    "src/router/index.js",
+    "src/main.js"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

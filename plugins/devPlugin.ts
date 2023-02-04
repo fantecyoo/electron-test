@@ -4,7 +4,7 @@ export let devPlugin = () => {
     name: "dev-plugin",
     configureServer(server: ViteDevServer) {
       require("esbuild").buildSync({
-        entryPoints: ["./src/main/mainEntry.ts"],
+        entryPoints: ["./src/main/mainEntry.js"],
         bundle: true,
         platform: "node",
         outfile: "./dist/mainEntry.js",

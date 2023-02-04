@@ -23,6 +23,6 @@ app.whenReady().then(() => {
   })
   mainWindow = new BrowserWindow(config)
   // mainWindow.webContents.openDevTools({ mode: "undocked" })
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
   mainWindow.loadFile("dist/index.html")
 })
