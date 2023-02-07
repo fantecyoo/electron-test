@@ -3,18 +3,18 @@ const RefreshTokenKey = "ims-file-manager-refresh_token"
 const SHOWAGAIN = "showAgainFlag"
 
 export function getToken() {
-  return window.sessionStorage.getItem(TokenKey)
+  return window.localStorage.getItem(TokenKey)
 }
 export function getRefreshToken() {
-  return window.sessionStorage.getItem(RefreshTokenKey)
+  return window.localStorage.getItem(RefreshTokenKey)
 }
 
 export function setToken(token) {
-  return window.sessionStorage.setItem(TokenKey, token)
+  return window.localStorage.setItem(TokenKey, token)
 }
 
 export function setRefreshToken(token) {
-  return window.sessionStorage.setItem(RefreshTokenKey, token)
+  return window.localStorage.setItem(RefreshTokenKey, token)
 }
 
 // export function removeToken() {

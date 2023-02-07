@@ -1,8 +1,22 @@
 import axios from "axios"
-import { getToken, setToken, getRefreshToken } from "utils/auth.js"
-import { router, routes } from "router/index.js"
+import { getToken, setToken, getRefreshToken } from "@/utils/auth.js"
+import { router, routes } from "@/router/index.js"
+import { ElMessage, ElNotification } from "element-plus"
+import { getRefreshTokenApi } from "@/network/login.js"
+import { serialize } from "@/utils/utils"
+const errorCode = {
+  "000": "Network error: Connection failed",
+  401: "Unauthorized: Access to this resource is denied.",
+  403: "Forbidden: You don’t have permission to access this server.",
+  404: "Page not found.",
+  417: "Expectation Failed",
+  426: "Upgrade Required",
+  428: "Precondition Required",
+  429: "Too Many Requests",
+  default: "System error. Your system administrator has been notified."
+}
 
-axios.defaults.timeout = 3000
+axios.defaults.timeout = 60000
 // 返回其他状态吗
 axios.defaults.validateStatus = function (status) {
   return status >= 200 && status <= 500 // 默认的
@@ -10,98 +24,160 @@ axios.defaults.validateStatus = function (status) {
 // 跨域请求，允许保存cookie
 axios.defaults.withCredentials = true
 
-const instance = axios.create()
+let data = {}
+// HTTPrequest拦截
+axios.interceptors.request.use(
+  config => {
+    if (!data[config.url]) {
+      data[config.url] = config
+    } else {
+      if (
+        data[config.url].url == config.url &&
+        config.method != "get" &&
+        config.method != "delete"
+      ) {
+        if (!data[config.url].data && !config.data) {
+          return false
+        } else {
+          let dataData =
+            typeof data[config.url].data == "object"
+              ? JSON.stringify(data[config.url].data)
+              : data[config.url].data
+          let configData =
+            typeof config.data == "object"
+              ? JSON.stringify(config.data)
+              : config.data
+          if (dataData == configData) {
+            return false
+          }
+        }
+      } else {
+        data[config.url] = config
+      }
+    }
+    setTimeout(() => {
+      data[config.url] = null
+      delete data[config.url]
+    }, 1000)
 
-instance.interceptors.request.use(
-  function (config) {
-    const token = getToken()
-    if (token) {
-      config.headers["Authorization"] = "Token: " + token
+    // const TENANT_ID = getStore({name: 'tenantId'})
+    const isToken = (config.headers || {}).isToken === false
+    //让每个请求携带token
+    let tokenInfo = getToken()
+    if (tokenInfo && !isToken) {
+      config.headers["Authorization"] = "bearer " + tokenInfo
+    }
+    // if (TENANT_ID) {
+    //   config.headers['TENANT-ID'] = TENANT_ID // 租户ID
+    // }
+
+    // headers中配置serialize为true开启序列化
+    if (config.method === "post" && config.headers.serialize) {
+      config.data = serialize(config.data)
+      delete config.data.serialize
     }
     return config
   },
-  function (error) {
+  error => {
     return Promise.reject(error)
   }
 )
 
+// HTTPresponse拦截
 let isRefreshing = false
-// 添加响应拦截器
-instance.interceptors.response.use(
-  function (response) {
-    // 2xx-4xx 范围内的状态码都会触发该函数。
-    const status = Number(response.status)
-    if (status >= 401 && status !== 401) {
-      Message({
-        type: "info",
-        duration: 5000,
-        dangerouslyUseHTMLString: true,
-        message:
-          "An error has occurred. A report has been generated and sent automatically to IT support team."
+let request = []
+let errorMessageHideList = [
+  "The specified object was not found in the store., The process failed to get the correct properties."
+]
+axios.interceptors.response.use(
+  response => {
+    const status = Number(response.status) || 200
+    const message =
+      response.data.msg || errorCode[status] || errorCode["default"]
+    if (status == 426 && response.data.code === 1) {
+      ElNotification({
+        title: "Warning",
+        message: message,
+        type: "warning"
       })
-    }
-    if (status == 400) {
-      Notification({
-        title: "Info",
-        message: response.data ? response.data.msg : "An error has occurred",
-        type: "info"
-      })
+      // store.dispatch("FedLogOut").then(() => {
+      router.push({ path: "/login" })
+      // })
+      return
     }
     if (status === 401) {
-      router.push({ path: "/login" })
-      return Promise.reject(error)
+      if (!isRefreshing) {
+        isRefreshing = true
+        if (getRefreshToken() && getRefreshToken() != "undefined") {
+          return getRefreshTokenApi(getRefreshToken())
+            .then(res => {
+              setRefreshToken(res.data.refresh_token)
+              setToken(res.data.access_token)
+              request.forEach(cb => cb())
+              request = []
+              return axios.request(response.config)
+            })
+            .catch(err => {})
+            .finally(() => {
+              isRefreshing = false
+            })
+        } else {
+          // store.dispatch("FedLogOut").then(() => {
+          router.push({ path: "/login" })
+          // })
+          return
+        }
+      } else {
+        //正在刷新token
+        return new Promise(resolve => {
+          request.push(() => {
+            resolve(axios.request(response.config))
+          })
+        })
+      }
+    }
+
+    if (status !== 200 || response.data.code === 1) {
+      if (status != 400 && status != 401) {
+        if (errorMessageHideList.indexOf(message) == -1) {
+          ElMessage({
+            type: "info",
+            duration: 5000,
+            dangerouslyUseHTMLString: true,
+            message:
+              "An error has occurred. A report has been generated and sent automatically to IT support team."
+            // message: `System error, please click <span class="showBug" onclick="window.onclickSetBugs('${response.data.errorId}')" style="border-bottom:1px solid #07a0ff;color:#07a0ff;cursor:pointer;"> here</span> to report bug.
+            //           <div>Error Id: ${response.data.errorId}</div>`,
+          })
+        }
+      } else {
+        if (errorMessageHideList.indexOf(message) == -1) {
+          ElNotification({
+            title: "Warning",
+            message: message,
+            type: "warning"
+          })
+        }
+      }
+      return Promise.reject(new Error(message))
+    }
+    if (status === 200 && response.data.code === 450) {
+      ElNotification({
+        title: "Warning",
+        message: message,
+        type: "warning"
+      })
     }
     return response
   },
-  function (error) {
-    // 超出 5xx 范围的状态码都会触发该函数。
-    // handle401(error)
-    console.log("123")
-    Message({
-      type: "info",
-      duration: 5000,
-      dangerouslyUseHTMLString: true,
-      message:
-        "An error has occurred. A report has been generated and sent automatically to IT support team."
-    })
-    return Promise.reject(error)
-  }
-)
-
-function handle401(err) {
-  const status = Number(err.status)
-  if (status === 401) {
-    if (!isRefreshing) {
-      isRefreshing = true
-      let refreshToken = getRefreshToken()
-      if (refreshToken) {
-        return refreshToken(refreshToken)
-          .then(res => {
-            setRefreshToken(res.data.refresh_token)
-            setToken(res.data.access_token)
-            request.forEach(cb => cb())
-            request = []
-            return axios.request(response.config)
-          })
-          .catch(err => {})
-          .finally(() => {
-            isRefreshing = false
-          })
-      } else {
-        store.dispatch("FedLogOut").then(() => {
-          router.push({ path: "/login" })
-        })
-        return
-      }
-    } else {
-      //正在刷新token
-      return new Promise(resolve => {
-        request.push(() => {
-          resolve(axios.request(response.config))
-        })
+  error => {
+    if (error.toString().indexOf("timeout") != -1) {
+      ElMessage({
+        type: "error",
+        message: `Looks like the server is taking too long to respond. Please try again in a while.`
       })
     }
+    return Promise.reject(new Error(error))
   }
-}
-
-export default instance
+)
+export default axios

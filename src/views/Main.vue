@@ -1,11 +1,14 @@
 <template>
   <BreadCrumb></BreadCrumb>
-  <FileTable style="margin-top: 10px"></FileTable>
+  <Suspense>
+    <FileTable style="margin-top: 10px"></FileTable>
+  </Suspense>
 </template>
 
 <script setup>
-import FileTable from "../components/FileTable.vue"
+import { defineAsyncComponent } from "vue"
 import BreadCrumb from "../components/BreadCrumb.vue"
+import FileTable from "@/components/FileTable.vue"
 </script>
 
 <style scoped lang="scss"></style>

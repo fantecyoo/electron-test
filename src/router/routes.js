@@ -5,19 +5,13 @@ const routes = [
   {
     path: "/",
     component: () => import("@/views/Home.vue"),
-    // redirect: to => {
-    //   return { path: "/index", query: { category: to.query.category || "all" } }
-    // },
-    redirect: "/login",
+    redirect: to => {
+      return { path: "/index", query: { category: to.query.category || "all" } }
+    },
+    // redirect: "/login",
     children: [
       {
         path: "index",
-        // redirect: to => {
-        //   return {
-        //     path: "/index",
-        //     query: { category: to.query.category || "all" }
-        //   }
-        // },
         component: () => import("@/views/Main.vue")
       }
     ]
@@ -25,7 +19,10 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("@/views/Login.vue")
+    component: () => import("@/views/Login.vue"),
+    meta: {
+      isAuth: false
+    }
   }
 ]
 

@@ -19,12 +19,7 @@
         v-model="password"
         type="password"
       ></el-input>
-      <div
-        class="sign-in"
-        @click="router.push({ path: '/index', query: { category: 'all' } })"
-      >
-        Sign in
-      </div>
+      <div class="sign-in" @click="handleLogin">Sign in</div>
     </div>
   </div>
 </template>
@@ -32,9 +27,23 @@
 <script setup>
 import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { loginByUsername } from "@/network/login.js"
+import { setToken, setRefreshToken } from "@/utils/auth.js"
+
 let username = ref("")
 let password = ref("")
 let router = useRouter()
+
+const handleLogin = async function () {
+  let userInfo = {
+    username: username.value,
+    password: password.value
+  }
+  const { data: res } = await loginByUsername(userInfo)
+  setToken(res.access_token)
+  setRefreshToken(res.refresh_token)
+  router.push({ path: "/index", query: { category: "all" } })
+}
 </script>
 
 <style lang="scss" scoped>

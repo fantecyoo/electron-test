@@ -4,85 +4,109 @@
       <el-table-column type="selection" width="35" />
       <el-table-column prop="name" label="File Name">
         <template #default="scope">
-          <div style="display: flex; align-items: center">
+          <div class="filename">
             <el-icon>
-              <Folder v-if="scope.row.type === 'folder'" />
-              <Document v-else />
+              <!-- <Folder v-if="scope.row.folder" /> -->
+              <img
+                src="https://res-1.cdn.office.net/files/fabric-cdn-prod_20220825.001/assets/item-types/16/folder.svg"
+                alt=""
+                v-if="scope.row.folder"
+              />
+              <img :src="getFileLogo(scope.row.name)" alt="" v-else />
+              <!-- <Document v-else /> -->
             </el-icon>
-            <span style="margin-left: 5px">{{ scope.row.name }}</span>
+            <div class="content">{{ scope.row.name }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="updateTime" label="Update Time" width="180" />
-      <el-table-column prop="size" label="Size" width="180" />
+      <el-table-column prop="lastModifiedDateTime" label="Modified" width="180">
+        <template #default="scope">
+          <span>{{
+            proxy.$moment(scope.row.lastModifiedDateTime).format("YYYY-MM-DD")
+          }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column prop="size" label="Size" width="180" /> -->
       <!-- <el-table-column prop="type" label="Type" /> -->
     </el-table>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, getCurrentInstance, watch } from "vue"
 import { useRouter, useRoute } from "vue-router"
-import { shell } from "electron"
-import path from "path"
+import {
+  getMicrosoftSite,
+  getSharePointList,
+  getSharePointListById,
+  getMicrosoftToken
+} from "@/network/api.js"
+import { useSharePointStore } from "@/stores/index.js"
+import { getFileLogo } from "@/utils/utils"
+// import { shell } from "electron"
+// import path from "path"
+// getMicrosoftToken()
+let sharepointInfo = useSharePointStore()
+const tableData = ref([])
 const router = useRouter()
 const route = useRoute()
-const tableData = ref([
-  {
-    name: "foler 1",
-    type: "folder",
-    folder: true,
-    size: "100kb",
-    updateTime: "2023.01.08"
-  },
-  {
-    name: "file 1",
-    type: "eml",
-    folder: false,
-    size: "100kb",
-    updateTime: "2023.01.08"
-  },
-  {
-    name: "file 2",
-    type: "eml",
-    folder: false,
-    size: "100kb",
-    updateTime: "2023.01.08"
-  }
-])
 
-const rowClick = function (row) {
+const { proxy } = getCurrentInstance()
+
+watch(
+  () => route.query,
+  val => {
+    console.log("router change")
+    console.log(val)
+    getFileList()
+  }
+)
+
+async function initSharePoint() {
+  const { data: res } = await getMicrosoftSite()
+  let siteId = res.msg
+  sharepointInfo.$patch({
+    siteId: siteId
+  })
+}
+
+const getFileList = async () => {
+  tableData.value = []
+  if (route.query.itemId) {
+    console.log(route.query)
+    var { data: res } = await getSharePointListById(route.query.itemId)
+  } else {
+    var { data: res } = await getSharePointList()
+  }
+  console.log(res)
+  tableData.value = res.value
+}
+
+function rowClick(row) {
   if (row.folder) {
-    console.log(route)
-    console.log(router)
-    tableData.value = [
-      {
-        name: "IPCC Newsletter - Issue 26 [DAHUI-DHDM.FID101834]  [DHDM-I040001N02]",
-        type: "eml",
-        folder: false,
-        size: "100kb",
-        updateTime: "2023.01.09"
-      }
-    ]
     router.push({
       path: route.path,
       query: {
         category: route.query.category,
-        path: route.query.path ? route.query.path + "/" + row.name : row.name
+        path: route.query.path ? route.query.path + "/" + row.name : row.name,
+        itemId: row.id
       }
     })
   } else {
     // import { shell, ipcRenderer } from "electron"
     // import path from "path"
     // console.log("----", shell, path)
-    shell.openPath(
-      path.resolve(
-        "/Users/fanlyu/Desktop/IPCC Newsletter - Issue 26 [DAHUI-DHDM.FID101834]  [DHDM-I040001N02].eml"
-      )
-    )
+    // shell.openPath(
+    //   path.resolve(
+    //     "/Users/fanlyu/Desktop/IPCC Newsletter - Issue 26 [DAHUI-DHDM.FID101834]  [DHDM-I040001N02].eml"
+    //   )
+    // )
     // ipcRenderer.invoke("ping")
   }
 }
+
+await initSharePoint()
+await getFileList()
 </script>
 
 <style scoped lang="scss">
@@ -116,5 +140,16 @@ const rowClick = function (row) {
   position: relative;
   top: -1px;
   font-size: 16px;
+}
+.filename {
+  display: flex;
+  align-items: center;
+  .content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 20px;
+    flex: 1;
+  }
 }
 </style>
