@@ -1,5 +1,7 @@
 // src\main\mainEntry.ts
 import { app, BrowserWindow, ipcMain } from "electron"
+import { downloadFile } from "./download.js"
+
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true"
 let mainWindow
 
@@ -21,6 +23,7 @@ app.whenReady().then(() => {
     console.log(__dirname)
   })
   mainWindow = new BrowserWindow(config)
+  downloadFile(mainWindow)
   // mainWindow.webContents.openDevTools({ mode: "undocked" })
   mainWindow.webContents.openDevTools()
   mainWindow.loadURL(process.argv[2])

@@ -12,6 +12,11 @@ import "element-plus/dist/index.css"
 import * as ElementPlusIconsVue from "@element-plus/icons-vue"
 console.log(window.localStorage.getItem("electron-key"))
 // window.localStorage.setItem("electron-key", "123")
+import { shell, ipcRenderer } from "electron"
+
+ipcRenderer.on("downloadItemDone", (event, value) => {
+  shell.openPath(value)
+})
 
 const app = createApp(App)
 app.config.globalProperties.$moment = moment

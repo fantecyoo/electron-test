@@ -39,11 +39,12 @@ import {
   getMicrosoftSite,
   getSharePointList,
   getSharePointListById,
-  getMicrosoftToken
+  getMicrosoftToken,
+  downloadSharePointFile
 } from "@/network/api.js"
 import { useSharePointStore } from "@/stores/index.js"
 import { getFileLogo } from "@/utils/utils"
-// import { shell } from "electron"
+import { shell, ipcRenderer } from "electron"
 // import path from "path"
 // getMicrosoftToken()
 let sharepointInfo = useSharePointStore()
@@ -93,6 +94,9 @@ function rowClick(row) {
       }
     })
   } else {
+    downloadSharePointFile(row.id)
+    ipcRenderer.invoke("ping")
+    ipcRenderer.invoke("downloadFile", row["@microsoft.graph.downloadUrl"])
     // import { shell, ipcRenderer } from "electron"
     // import path from "path"
     // console.log("----", shell, path)

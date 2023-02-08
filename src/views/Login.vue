@@ -30,8 +30,8 @@ import { useRouter } from "vue-router"
 import { loginByUsername } from "@/network/login.js"
 import { setToken, setRefreshToken } from "@/utils/auth.js"
 
-let username = ref("")
-let password = ref("")
+let username = ref("richard.ma")
+let password = ref("123456")
 let router = useRouter()
 
 const handleLogin = async function () {

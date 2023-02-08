@@ -10,7 +10,7 @@
         :key="path"
         :to="{
           path: '/index',
-          query: { category: category, path: getPath(pathList, index) }
+          query: getPath(path)
         }"
         >{{ path }}</el-breadcrumb-item
       >
@@ -20,13 +20,15 @@
 
 <script setup>
 import { ArrowRight } from "@element-plus/icons-vue"
-import { ref, reactive, computed } from "vue"
-import { useRoute } from "vue-router"
+import { ref, reactive, computed, watch, unref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 const route = useRoute()
-
+const router = useRouter()
 const category = computed(() => {
   return route.query.category
 })
+
+const routeHistory = new Map()
 
 const categoryLable = computed(() => {
   switch (category.value) {
@@ -37,22 +39,34 @@ const categoryLable = computed(() => {
   }
 })
 
-const getPath = function (pathList, pathIndex) {
-  return pathList.reduce((pre, cur, index, ary) => {
-    if (index > pathIndex) {
-      return pre
-    } else {
-      return pre + "/" + cur
-    }
-  })
+const getPath = function (path) {
+  console.log(path, routeHistory.get(path), routeHistory)
+  return routeHistory.get(path)
 }
 
+watch(
+  () => route.query.path,
+  val => {}
+)
+
 const pathList = computed(() => {
-  let path = route.query.path || ""
+  if (!route.query.path) {
+    return []
+  }
+  let path = route.query.path
   path = path.split("/")
-  console.log(path)
+  routeHistory.set(path[path.length - 1], unref(route).query)
   return path
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.el-breadcrumb {
+  // display: flex;
+  // overflow: hidden;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
+  // direction: rtl;
+  // text-align: left;
+}
+</style>
