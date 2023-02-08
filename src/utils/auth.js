@@ -1,5 +1,6 @@
 const TokenKey = "ims-file-manager-access-token"
 const RefreshTokenKey = "ims-file-manager-refresh_token"
+const MicrosoftTokenKey = "microsoft-access-token"
 const SHOWAGAIN = "showAgainFlag"
 
 export function getToken() {
@@ -15,6 +16,14 @@ export function setToken(token) {
 
 export function setRefreshToken(token) {
   return window.localStorage.setItem(RefreshTokenKey, token)
+}
+
+export function getMicrosoftToken() {
+  return window.localStorage.getItem(MicrosoftTokenKey)
+}
+
+export function setMicrosoftToken(token) {
+  return window.localStorage.setItem(MicrosoftTokenKey, token)
 }
 
 // export function removeToken() {

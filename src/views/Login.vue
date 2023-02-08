@@ -28,13 +28,19 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { loginByUsername } from "@/network/login.js"
-import { setToken, setRefreshToken } from "@/utils/auth.js"
-
+import { setToken, setRefreshToken, setMicrosoftToken } from "@/utils/auth.js"
+import { getMicrosoftTokenFromIMS } from "@/network/api.js"
 let username = ref("richard.ma")
 let password = ref("123456")
 let router = useRouter()
 
 const handleLogin = async function () {
+  await handleIMSToken()
+  await handleMicrosoftToken()
+  router.push({ path: "/index", query: { category: "all" } })
+}
+
+const handleIMSToken = async function () {
   let userInfo = {
     username: username.value,
     password: password.value
@@ -42,7 +48,11 @@ const handleLogin = async function () {
   const { data: res } = await loginByUsername(userInfo)
   setToken(res.access_token)
   setRefreshToken(res.refresh_token)
-  router.push({ path: "/index", query: { category: "all" } })
+}
+
+const handleMicrosoftToken = async function () {
+  const { data: res } = await getMicrosoftTokenFromIMS()
+  setMicrosoftToken(res.msg)
 }
 </script>
 

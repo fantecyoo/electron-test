@@ -2,7 +2,7 @@ import request from "./index.js"
 import { useSharePointStore } from "@/stores/index.js"
 import { ref } from "vue"
 
-export function getMicrosoftToken() {
+export function getMicrosoftTokenFromIMS() {
   return request({
     url: "/resource/sharepoint/client/token",
     method: "get"
