@@ -26,12 +26,16 @@ app.whenReady().then(() => {
   mainWindow = new BrowserWindow(config)
   downloadFile(mainWindow)
   // mainWindow.webContents.openDevTools({ mode: "undocked" })
-  // if (process.env.NODE_ENV === "development") {
-  //   mainWindow.webContents.openDevTools()
-  //   mainWindow.loadURL(process.argv[2])
-  // } else {
-  mainWindow.webContents.openDevTools()
-  console.log(__dirname, "--", path.resolve(__dirname, "../../dist/index.html"))
-  mainWindow.loadFile(path.resolve(__dirname, "../../dist/index.html"))
-  // }
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools()
+    mainWindow.loadURL(process.argv[2])
+  } else {
+    // mainWindow.webContents.openDevTools()
+    console.log(
+      __dirname,
+      "--",
+      path.resolve(__dirname, "../../dist/index.html")
+    )
+    mainWindow.loadFile(path.resolve(__dirname, "../../dist/index.html"))
+  }
 })

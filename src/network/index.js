@@ -24,6 +24,12 @@ axios.defaults.validateStatus = function (status) {
 // 跨域请求，允许保存cookie
 axios.defaults.withCredentials = true
 
+if (process.env.NODE_ENV === "development") {
+  axios.defaults.baseURL = "https://oritech.dev:5888/"
+} else {
+  axios.defaults.baseURL = "https://oritech.dev:5888/"
+}
+
 let data = {}
 // HTTPrequest拦截
 axios.interceptors.request.use(

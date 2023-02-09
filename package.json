@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "main": "./src/main/mainEntry.js",
+  "author":"oritech",
+  "description":"Description",
   "scripts": {
     "dev": "cross-env NODE_ENV=development vite",
     "build": "vue-tsc && vite build",
