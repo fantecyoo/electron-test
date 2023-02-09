@@ -2,8 +2,9 @@ import axios from "axios"
 import { setMicrosoftToken, getMicrosoftToken } from "@/utils/auth.js"
 import { router, routes } from "@/router/index.js"
 import { ElMessage, ElNotification } from "element-plus"
-import { getMicrosoftTokenFromIMS } from "@/network/api.js"
+import { getMicrosoftTokenFromIMS } from "@/network/microsoft/api.js"
 import { serialize } from "@/utils/utils"
+import { getMicrosoftSiteId } from "@/utils/auth.js"
 
 const errorCode = {
   "000": "Network error: Connection failed",
@@ -42,6 +43,11 @@ instance.interceptors.request.use(
       config.data = serialize(config.data)
       delete config.data.serialize
     }
+
+    // 配置siteId
+    const siteId = getMicrosoftSiteId()
+    config.url = config.url.replace("customsiteid", siteId)
+
     return config
   },
   error => {
@@ -63,15 +69,16 @@ instance.interceptors.response.use(
     if (status === 401) {
       if (!isRefreshing) {
         isRefreshing = true
-        getMicrosoftToken()
+        return getMicrosoftTokenFromIMS()
           .then(res => {
-            setMicrosoftToken(res.msg)
+            console.log(res)
+            setMicrosoftToken(res.data.msg)
             request.forEach(cb => cb())
             request = []
             return instance.request(response.config)
           })
           .catch(err => {})
-          .finally(() => {
+          .finally(res => {
             isRefreshing = false
           })
       } else {

@@ -32,7 +32,7 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
-    open: true,
+    open: false,
     port: 8083,
     proxy: {
       "/auth": {

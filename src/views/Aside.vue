@@ -20,6 +20,6 @@
 <style scoped lang="scss">
 .el-menu-vertical {
   height: 100%;
-  border-top: solid 1px var(--el-menu-border-color);
+  // border-top: solid 1px var(--el-menu-border-color);
 }
 </style>

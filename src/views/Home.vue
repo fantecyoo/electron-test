@@ -1,6 +1,6 @@
 <template>
   <div class="common-layout">
-    <el-container>
+    <el-container class="container">
       <el-header><Header></Header></el-header>
       <el-container class="content">
         <el-aside width="200px"><Aside></Aside></el-aside>
@@ -23,12 +23,14 @@ import Main from "./Main.vue"
 }
 .el-header {
   padding: 0px;
+  height: 40px;
 }
-.el-container {
+.container {
   height: 100%;
 }
 .content {
-  height: calc(100% - 60px);
+  // height: 100%;
+  height: 1px;
 }
 .el-main {
   padding-right: 0px;

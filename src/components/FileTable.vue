@@ -40,7 +40,7 @@ import {
   getSharePointList,
   getSharePointListById,
   downloadSharePointFile
-} from "@/network/api.js"
+} from "@/network/microsoft/api.js"
 import { useSharePointStore } from "@/stores/index.js"
 import { getFileLogo } from "@/utils/utils"
 import { shell, ipcRenderer } from "electron"
@@ -60,14 +60,6 @@ watch(
     getFileList()
   }
 )
-
-async function initSharePoint() {
-  const { data: res } = await getMicrosoftSite()
-  let siteId = res.msg
-  sharepointInfo.$patch({
-    siteId: siteId
-  })
-}
 
 const getFileList = async () => {
   tableData.value = []
@@ -107,7 +99,6 @@ function rowClick(row) {
   }
 }
 
-await initSharePoint()
 await getFileList()
 </script>
 
@@ -131,12 +122,12 @@ await getFileList()
   overflow: auto;
 }
 :deep(.el-table__header-wrapper) {
-  position: fixed;
-  top: 104px;
-  z-index: 10000;
+  // position: fixed;
+  // top: 34px;
+  // z-index: 10000;
 }
 :deep(.el-table__body-wrapper) {
-  margin-top: 40px;
+  // margin-top: 34px;
 }
 .el-icon {
   position: relative;

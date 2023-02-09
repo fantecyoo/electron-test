@@ -1,6 +1,3 @@
-import Home from "@/views/Home.vue"
-// import Main from "@/views/Main.vue"
-import Login from "@/views/Login.vue"
 const routes = [
   {
     path: "/",
@@ -19,7 +16,7 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("@/views/Login.vue"),
+    component: () => import("@/views/login/Login.vue"),
     meta: {
       isAuth: false
     }

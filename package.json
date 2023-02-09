@@ -2,19 +2,20 @@
   "name": "ims-file-manager",
   "private": true,
   "version": "0.0.0",
-  "main": "main.js",
+  "main": "./src/main/mainEntry.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "cross-env NODE_ENV=development vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "vue-tsc && vite build && electron-forge make"
+    "make": "cross-env NODE_ENV=prod vue-tsc && vite build && electron-forge make "
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
     "@types/node": "^18.11.18",
     "axios": "^1.3.1",
+    "cross-env": "^7.0.3",
     "crypto-js": "^4.1.1",
     "electron-squirrel-startup": "^1.0.0",
     "element-plus": "^2.2.28",

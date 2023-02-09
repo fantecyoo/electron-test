@@ -1,7 +1,7 @@
 // src\main\mainEntry.ts
-import { app, BrowserWindow, ipcMain } from "electron"
-import { downloadFile } from "./download.js"
-
+const { app, BrowserWindow, ipcMain } = require("electron")
+const { downloadFile } = require("./download.js")
+const path = require("path")
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true"
 let mainWindow
 
@@ -15,16 +15,23 @@ app.whenReady().then(() => {
       webviewTag: true,
       spellcheck: false,
       disableHtmlFullscreenWindowResize: true
-    },
-    titleBarStyle: "hidden"
+    }
+    // titleBarStyle: "hidden"
   }
   ipcMain.handle("ping", () => {
     console.log("pong")
     console.log(__dirname)
   })
+  console.log(process.env.NODE_ENV)
   mainWindow = new BrowserWindow(config)
   downloadFile(mainWindow)
   // mainWindow.webContents.openDevTools({ mode: "undocked" })
+  // if (process.env.NODE_ENV === "development") {
+  //   mainWindow.webContents.openDevTools()
+  //   mainWindow.loadURL(process.argv[2])
+  // } else {
   mainWindow.webContents.openDevTools()
-  mainWindow.loadURL(process.argv[2])
+  console.log(__dirname, "--", path.resolve(__dirname, "../../dist/index.html"))
+  mainWindow.loadFile(path.resolve(__dirname, "../../dist/index.html"))
+  // }
 })

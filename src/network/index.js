@@ -2,7 +2,7 @@ import axios from "axios"
 import { getToken, setToken, getRefreshToken } from "@/utils/auth.js"
 import { router, routes } from "@/router/index.js"
 import { ElMessage, ElNotification } from "element-plus"
-import { getRefreshTokenApi } from "@/network/login.js"
+import { getRefreshTokenApi } from "@/network/login/login.js"
 import { serialize } from "@/utils/utils"
 const errorCode = {
   "000": "Network error: Connection failed",

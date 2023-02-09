@@ -1,5 +1,5 @@
 import { createApp } from "vue"
-import "./styles/style.css"
+import "./styles/style.scss"
 import App from "./App.vue"
 import { router } from "./router/index"
 import directive from "./utils/directive.js"
@@ -10,8 +10,6 @@ import moment from "moment"
 import ElementPlus from "element-plus"
 import "element-plus/dist/index.css"
 import * as ElementPlusIconsVue from "@element-plus/icons-vue"
-console.log(window.localStorage.getItem("electron-key"))
-// window.localStorage.setItem("electron-key", "123")
 import { shell, ipcRenderer } from "electron"
 
 ipcRenderer.on("downloadItemDone", (event, value) => {

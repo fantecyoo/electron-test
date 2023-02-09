@@ -1,4 +1,4 @@
-import request from "./index.js"
+import request from "@/network/index.js"
 import { encryption, randomLenNum } from "@/utils/utils"
 import qs from "qs"
 

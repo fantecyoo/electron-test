@@ -60,6 +60,8 @@ export const getFileLogo = fileName => {
     case "eml":
       fileType = "email"
       break
+    case "msg":
+      fileType = "email"
     default:
       break
   }
