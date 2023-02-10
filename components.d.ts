@@ -29,5 +29,6 @@ declare module '@vue/runtime-core' {
     PageButton: typeof import('./src/components/PageButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Tree: typeof import('./src/components/Tree.vue')['default']
   }
 }

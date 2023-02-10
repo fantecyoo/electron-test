@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="el">
     <el-breadcrumb :separator-icon="ArrowRight">
       <el-breadcrumb-item
         :to="{ path: '/index', query: { category: category } }"
@@ -22,6 +22,10 @@
 import { ArrowRight } from "@element-plus/icons-vue"
 import { ref, reactive, computed, watch, unref } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { useElementSize } from "@vueuse/core"
+
+const el = ref(null)
+const { width, height } = useElementSize(el)
 const route = useRoute()
 const router = useRouter()
 const category = computed(() => {
@@ -44,11 +48,6 @@ const getPath = function (path) {
   return routeHistory.get(path)
 }
 
-watch(
-  () => route.query.path,
-  val => {}
-)
-
 const pathList = computed(() => {
   if (!route.query.path) {
     return []
@@ -58,6 +57,22 @@ const pathList = computed(() => {
   routeHistory.set(path[path.length - 1], unref(route).query)
   return path
 })
+
+function getStrLeng(str) {
+  var realLength = 0
+  var len = str.length
+  var charCode = -1
+  for (var i = 0; i < len; i++) {
+    charCode = str.charCodeAt(i)
+    if (charCode >= 0 && charCode <= 128) {
+      realLength += 1
+    } else {
+      // 如果是中文则长度加2
+      realLength += 2
+    }
+  }
+  return realLength
+}
 </script>
 
 <style scoped lang="scss">
@@ -68,5 +83,14 @@ const pathList = computed(() => {
   // text-overflow: ellipsis;
   // direction: rtl;
   // text-align: left;
+}
+:deep(.el-breadcrumb__inner) {
+  white-space: nowrap;
+  // max-width: 250px;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
+}
+:deep(.el-breadcrumb__item) {
+  margin-bottom: 10px;
 }
 </style>

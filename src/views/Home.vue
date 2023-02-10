@@ -35,5 +35,7 @@ import Main from "./Main.vue"
 .el-main {
   padding-right: 0px;
   padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
 }
 </style>

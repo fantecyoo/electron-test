@@ -1,6 +1,6 @@
 <template>
-  <div class="tableContainer">
-    <el-table :data="tableData" style="width: 100%" @row-click="rowClick">
+  <div class="tableContainer" ref="el">
+    <el-table :data="tableData" :max-height="height" @row-click="rowClick">
       <el-table-column type="selection" width="35" />
       <el-table-column prop="name" label="File Name">
         <template #default="scope">
@@ -41,11 +41,12 @@ import {
   getSharePointListById,
   downloadSharePointFile
 } from "@/network/microsoft/api.js"
-import { useSharePointStore } from "@/stores/index.js"
 import { getFileLogo } from "@/utils/utils"
 import { shell, ipcRenderer } from "electron"
-// import path from "path"
-let sharepointInfo = useSharePointStore()
+import { useElementSize } from "@vueuse/core"
+
+const el = ref(null)
+const { width, height } = useElementSize(el)
 const tableData = ref([])
 const router = useRouter()
 const route = useRoute()
@@ -118,7 +119,8 @@ await getFileList()
   display: none;
 }
 .tableContainer {
-  height: calc(100% - 30px);
+  flex: 1;
+  // height: calc(100% - 30px);
   overflow: auto;
 }
 :deep(.el-table__header-wrapper) {
